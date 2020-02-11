@@ -23,7 +23,7 @@ public protocol SignaturePadDelegate: class {
     
     private var path: UIBezierPath = UIBezierPath()
     private var dot: UIBezierPath = UIBezierPath()
-    private var incrementalImage: UIImage?
+    open var incrementalImage: UIImage?
     private var points: [CGPoint] = [CGPoint](repeating: CGPoint(), count: 5)
     private var ctr: Int = 0
     
@@ -99,14 +99,14 @@ public protocol SignaturePadDelegate: class {
         if ctr < 4 {
             switch ctr {
             case 0:
-                dot = UIBezierPath(ovalIn: CGRect(x: points[0].x, y: points[0].y, width: lineWidth/2, height: lineWidth/2))
+                dot = UIBezierPath(ovalIn: CGRect(x: points[0].x, y: points[0].y, width: lineWidth, height: lineWidth))
                 break
             case 1:
-                dot = UIBezierPath(ovalIn: CGRect(x: points[0].x, y: points[0].y, width: lineWidth/2, height: lineWidth/2))
+                dot = UIBezierPath(ovalIn: CGRect(x: points[0].x, y: points[0].y, width: lineWidth, height: lineWidth))
                 points[0] = points[1]
                 break
             case 2:
-                dot = UIBezierPath(ovalIn: CGRect(x: points[0].x, y: points[0].y, width: lineWidth/2, height: lineWidth/2))
+                dot = UIBezierPath(ovalIn: CGRect(x: points[0].x, y: points[0].y, width: lineWidth, height: lineWidth))
                 points[0] = points[2]
                 break
             case 3:
@@ -160,25 +160,15 @@ public protocol SignaturePadDelegate: class {
         self.setNeedsDisplay()
     }
     
-    open func setSignature(_image: UIImage) {
-        if incrementalImage == nil {
-            let rectPath = UIBezierPath(rect: self.bounds)
-            UIColor.white.setFill()
-            rectPath.fill()
-        }
-        
-        UIGraphicsBeginImageContext(self.bounds.size)
-        _image.draw(in: CGRect(x: 0, y: 0, width: self.bounds.size.width, height: self.bounds.size.height))
-        incrementalImage = UIGraphicsGetImageFromCurrentImageContext()
-        UIGraphicsEndImageContext()
-        self.setNeedsDisplay()
-    }
-    
     open func getSignature() -> UIImage? {
         UIGraphicsBeginImageContextWithOptions(self.bounds.size, self.isOpaque, 0.0)
         self.drawHierarchy(in: self.bounds, afterScreenUpdates: false)
         let signature = UIGraphicsGetImageFromCurrentImageContext()
         UIGraphicsEndImageContext()
         return signature
+    }
+    
+    open func addIncremetalImage(_ image: UIImage) {
+        incrementalImage = image
     }
 }
